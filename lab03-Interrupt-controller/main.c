@@ -164,16 +164,16 @@ void init_new_handlers(void) {
   _disable();
 
   // Initialize master
-  outp(0x20, 0x11); // ICW1 |0|0|0|1|level|vec size 8 byte|no slave|ICW4|
+  outp(0x20, 0x11);               // ICW1 
   outp(0x21, MASTER_BASE_VECTOR); // ICW2
-  outp(0x21, 0x04); // ICW3 - the port bit of SLAVE (in binary format)
-  outp(0x21, 0x01); // ICW4 - default
+  outp(0x21, 0x04);               // ICW3
+  outp(0x21, 0x01);               // ICW4
 
   // Initialize slave
-  outp(0xA0, 0x11); // ICW1 |0|0|0|1|level|vec size 8 byte|no slave|ICW4|
+  outp(0xA0, 0x11);              // ICW1 
   outp(0xA1, SLAVE_BASE_VECTOR); // ICW2
-  outp(0xA1, 0x02); // ICW3 - the port number of connected port on MASTER
-  outp(0xA1, 0x01); // ICW4 - default
+  outp(0xA1, 0x02);              // ICW3
+  outp(0xA1, 0x01);              // ICW4
 
   // Enable interruptions
   _enable();
