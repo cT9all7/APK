@@ -112,15 +112,26 @@ unsigned notes[NOTES_AMOUNT][3] = {
 };
 
 void state_words(void) {
-  int channel, state;
+  unsigned channel, state;
+
   // Port 40h (channel 0, system clock interruption)
   // Port 41h (channel 1, memory regeneration)
   // Port 42h (channel 2, speaker sound)
   int ports[] = {0x40, 0x41, 0x42};
 
-  //                   1110_0010, 1110_0100, 1110_1000
+  // 11 - RBC (always 11)
+  // 1 - not remember CE
+  // 0 - read chanel state
+  // 001, 010, 100 - chanel
+  // 0 - always 0
+  //                11 1 0 001 0, 11 1 0 010 0, 11 1 0 100 0
   int  control_word[] = {226, 228, 232};
-  char state_word[]   = "00000000";
+
+  // Almost the same as control register (in set_frequency)
+  // 6 - FN: check load from CR to CE
+  // 7 - OUT: check out line state
+  char state_word[]   = "76000000";
+
   int  i;
 
   printf("Status word: \n");
@@ -139,13 +150,14 @@ void state_words(void) {
   }
 }
 
-void set_count(unsigned divider) {
+void set_frequency(unsigned divider) {
   unsigned long kd = 1193180 / divider;
 
-  // 1011_0110 - channel 2,
-  // operation 4 (read/write low after high),
-  // mode 3 (Square wave),
-  // format 0 (binary)
+  // 10 11 011 0:
+  // 10 - chanel to read,
+  // 11 - read/write low, then high byte,
+  // 011 - meander,
+  // 0 - bin
   outp(0x43, 0xB6);
   // The smallest byte of the frequency divider
   outp(0x42, kd % 256);
@@ -157,8 +169,10 @@ void set_count(unsigned divider) {
 void play_music(void) {
   int i;
   for (i = 0; i < NOTES_AMOUNT; i++) {
-    set_count(notes[i][0]);
-    // Turn on speaker
+    set_frequency(notes[i][0]);
+    // Turn on speaker using first 2 bits:
+    // 0 - turn on/off chanel 2 in sys timer,
+    // 1 - turn on/off dynamic
     outp(0x61, inp(0x61) | 0x03);
     delay(notes[i][1]);
     // Turn off speaker
