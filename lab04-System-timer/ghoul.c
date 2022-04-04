@@ -128,7 +128,7 @@ void state_words(void) {
   int  control_word[] = {226, 228, 232};
 
   // Almost the same as control register (in set_frequency)
-  // 6 - FN: check load from CR to CE
+  // 6 - check is timer ready to read
   // 7 - OUT: check out line state
   char state_word[]   = "76000000";
 
@@ -154,9 +154,9 @@ void set_frequency(unsigned divider) {
   unsigned long kd = 1193180 / divider;
 
   // 10 11 011 0:
-  // 10 - chanel to read,
-  // 11 - read/write low, then high byte,
-  // 011 - meander,
+  // 10 - chanel
+  // 11 - read/write low, then high byte
+  // 011 - meander
   // 0 - bin
   outp(0x43, 0xB6);
   // The smallest byte of the frequency divider
@@ -171,7 +171,7 @@ void play_music(void) {
   for (i = 0; i < NOTES_AMOUNT; i++) {
     set_frequency(notes[i][0]);
     // Turn on speaker using first 2 bits:
-    // 0 - turn on/off chanel 2 in sys timer,
+    // 0 - turn on/off chanel 2 in sys timer
     // 1 - turn on/off dynamic
     outp(0x61, inp(0x61) | 0x03);
     delay(notes[i][1]);
@@ -184,5 +184,12 @@ void play_music(void) {
 int main(void) {
   state_words();
   play_music();
+  state_words();
   return 0;
 }
+// 000 - прерывание IRQ0 по окончанию таймера
+// 001 - ждущий мультивибратор
+// x10 - генератор импульсов
+// x11 - генератор прямоугольных импульсов
+// 100 - программно-зависимый одновибратор
+// 101 - аппаратно-зависимый одновибратор
