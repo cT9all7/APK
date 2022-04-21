@@ -22,10 +22,25 @@ enum time_registers {
 };
 
 enum state_registers {
-  A = 0x0A, // bit 7 - is time update, bit 4-6 - divider, 0-3 conversion value
+  // 7 - is time update
+  // 4-6 - divider
+  // 0-3 interrupt frequency
+  A = 0x0A,
+  // 7 - refresh clock control
+  // 6 - irq8 control
+  // 5 - timer interrupt allowed
+  // 4 - interrupt after cycle allowed
+  // 3 - meander generation allowed
+  // 2 - time format: 1 is binary, 0 is BSC
+  // 1 - time format: 1 is 24h, 0 is 12h
+  // 0 - summer time allowed
   B = 0x0B,
+  // 7 - was interruption
+  // 6 - period interruption is allowed
+  // 5 - timer interruption
+  // 4 - interrupt after clock
+  // 0-3 - must be zero
   C = 0x0C,
-  D = 0x0D,
 };
 
 unsigned   time[TIME_REG_AMOUNT];
@@ -102,6 +117,7 @@ void interrupt new_interrupt(void) {
     puts("5 bit in C register is set");
   }
 
+  // Send EOI to master and slave
   outp(0x20, 0x20);
   outp(0xA0, 0x20);
 
