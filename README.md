@@ -1,2 +1,2 @@
 # Архитектура персональных компьютеров
-[Мой центральный репозиторий работ БГУИР](https://github.com/AmaterasuOmikami/BSUIR)
+[Мой центральный репозиторий работ БГУИР](https://github.com/Amaterasu-Omikami/BSUIR)
